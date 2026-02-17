@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: orders
+    ports:
+      - "5432:5432"
+
+  payment-service:
+    build: ./payment-service
+    ports:
+      - "3001:3001"
+
+  notification-service:
+    build: ./notification-service
+    ports:
+      - "3002:3002"
+
+  order-service:
+    build: ./order-service
+    ports:
+      - "3000:3000"
+    depends_on:
+      - payment-service
+      - notification-service
+      - postgres
