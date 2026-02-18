@@ -2,47 +2,56 @@
 
 A containerized microservices demo that models a real-world order workflow with persistence, observability, and failure simulation.
 
-## 🚀 What This Demonstrates
+This project is a small distributed system I built to demonstrate how I think about observability, failure handling, and system behavior in production-like environments.
 
-- Service-to-service communication
-- Distributed trace ID propagation via headers
-- PostgreSQL persistence
-- Structured JSON logging
-- Prometheus-compatible metrics
-- Deterministic failure injection for testing
-- Observability validation via end-to-end tests
-- Docker-based local orchestration
+It’s intentionally simple from a business perspective (placing an order), but instrumented the way real systems should be — with metrics, structured logs, trace context propagation, and failure simulation built in from the start.
 
-This project is designed to showcase backend reliability and observability patterns used in production systems.
+## Why I Built This
 
+Most demo microservices projects focus on CRUD.
+
+This one focuses on:
+- What happens when things fail?
+- Can you trace a request across services?
+- Can you measure system behavior without attaching a debugger?
+- Can you validate outcomes using metrics?
+- Can you reproduce failure scenarios deterministically?
+- The goal is to show how to make distributed systems observable by design, not as an afterthought.
 ---
 
-## 🏗 Architecture
+## 🏗 Architecture Overview
 
-**Services:**
+Client → Order Service → Payment Service → Notification Service → PostgreSQL
 
-- **order-service (3000)**  
-  - Accepts orders  
-  - Persists state to PostgreSQL  
-  - Calls downstream services  
-  - Tracks Prometheus metrics  
-  - Emits structured logs  
-  - Exposes `/health` and `/metrics`
+- **Order Service** – Accepts requests and orchestrates downstream calls  
+- **Payment Service** – Simulates payment processing with configurable failure rates  
+- **Notification Service** – Simulates post-order side effects  
+- **PostgreSQL** – Persists order state  
 
-- **payment-service (3001)**  
-  - Simulates payment processing  
-  - Supports configurable failure rate  
-  - Supports deterministic failure via `forceFail` flag  
-  - Emits structured logs  
+All services are containerized and run locally via Docker Compose.
 
-- **notification-service (3002)**  
-  - Simulates downstream notification handling  
+## Observability Features
 
-- **postgres (5432)**  
-  - Stores order records  
+### Structured Logging
+- JSON logs via Winston
+- Correlation / trace ID propagation across services
+- Logs structured for ingestion into centralized logging systems
 
----
+### Metrics
+- `/metrics` endpoint in Prometheus format
+- Counters for total, successful, and failed orders
+- System metrics for runtime visibility
+- Enables metric-driven validation of behavior
 
+### Health Endpoints
+- `/health` endpoint per service
+- Supports readiness/liveness checks and automation hooks
+
+### Failure Simulation
+- Configurable payment failure rate
+- Enables testing of downstream error handling
+- Makes failure paths observable and measurable
+- 
 ## 🛠 Tech Stack
 
 - Node.js 18  
@@ -170,3 +179,17 @@ To stop and remove all containers:
     docker compose down
 
 If persistent volumes are not configured, database data will be removed when the containers are deleted.
+
+---
+
+## Where This Could Go Next
+
+If extended further, this system could include:
+
+- OpenTelemetry tracing
+- Jaeger visualization
+- Retry + exponential backoff
+- Circuit breaker patterns
+- Contract testing between services
+- CI pipeline running integration tests in Docker
+- Load testing with metric validation
