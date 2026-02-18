@@ -26,7 +26,11 @@ app.post("/config", (req, res) => {
 
 app.post("/pay", (req, res) => {
   const traceId = req.headers["x-trace-id"] || crypto.randomUUID();
-  const { amount } = req.body;
+  const { amount, forceFail } = req.body;
+
+  if (forceFail) {
+    return res.status(500).json({ status: "failed" });
+  }
 
   const shouldFail = Math.random() < failureRate;
 

@@ -102,7 +102,7 @@ app.get("/health", (req, res) => {
 // Create Order Endpoint
 // ------------------------
 app.post("/order", async (req, res) => {
-  const { amount } = req.body;
+  const { amount, forceFail } = req.body;
 
   if (!amount) {
     return res.status(400).json({ error: "Amount is required" });
@@ -134,7 +134,7 @@ ordersTotal.inc();
     // ------------------------
     await axios.post(
       "http://payment-service:3001/pay",
-      { amount },
+      { amount, forceFail },
       { headers: { "x-trace-id": traceId } }
     );
 
@@ -185,8 +185,8 @@ ordersTotal.inc();
     });
 
     res.status(500).json({
-      error: "Order failed",
-      orderId
+      orderId,
+      status: "failed"
     });
 
     // increase failed orders countercd
