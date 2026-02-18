@@ -5,11 +5,12 @@ A containerized microservices demo that models a real-world order workflow with 
 ## 🚀 What This Demonstrates
 
 - Service-to-service communication
-- Distributed trace ID propagation
+- Distributed trace ID propagation via headers
 - PostgreSQL persistence
-- Retry handling for dependent services
 - Structured JSON logging
 - Prometheus-compatible metrics
+- Deterministic failure injection for testing
+- Observability validation via end-to-end tests
 - Docker-based local orchestration
 
 This project is designed to showcase backend reliability and observability patterns used in production systems.
@@ -21,16 +22,24 @@ This project is designed to showcase backend reliability and observability patte
 **Services:**
 
 - **order-service (3000)**  
-  Accepts orders, persists state to Postgres, calls downstream services, exposes `/health` and `/metrics`.
+  - Accepts orders  
+  - Persists state to PostgreSQL  
+  - Calls downstream services  
+  - Tracks Prometheus metrics  
+  - Emits structured logs  
+  - Exposes `/health` and `/metrics`
 
 - **payment-service (3001)**  
-  Simulates payment processing (random failures).
+  - Simulates payment processing  
+  - Supports configurable failure rate  
+  - Supports deterministic failure via `forceFail` flag  
+  - Emits structured logs  
 
 - **notification-service (3002)**  
-  Simulates downstream notification handling.
+  - Simulates downstream notification handling  
 
 - **postgres (5432)**  
-  Stores order records.
+  - Stores order records  
 
 ---
 
@@ -40,9 +49,10 @@ This project is designed to showcase backend reliability and observability patte
 - Express  
 - PostgreSQL  
 - Docker & Docker Compose  
-- prom-client (metrics)  
+- `prom-client` (metrics)  
 - Winston (structured logging)  
-- Axios (HTTP communication)
+- Axios (HTTP communication)  
+- Playwright (end-to-end observability testing)
 
 ---
 
